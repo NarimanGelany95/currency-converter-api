@@ -1,0 +1,248 @@
+openapi: 3.0.0
+info:
+  title: Currency Conversion API
+  version: 1.0.0
+  description: API to fetch exchange rates between currencies and handle user authentication.
+tags:
+  - name: currency conversion
+    description: Operations related to currency conversion
+  - name: authentication
+    description: Operations related to user authentication
+paths:
+  /api/convert:
+    get:
+      tags:
+        - currency conversion
+      summary: Get exchange rate
+      description: Fetches the exchange rate and converts the given amount.
+      parameters:
+        - in: query
+          name: from
+          schema:
+            $ref: "#/components/schemas/CurrencyCode"
+          required: true
+          description: Source currency code (e.g., EUR)
+        - in: query
+          name: to
+          schema:
+            $ref: "#/components/schemas/CurrencyCode"
+          required: true
+          description: Target currency code (e.g., USD)
+        - in: query
+          name: amount
+          schema:
+            $ref: "#/components/schemas/Amount"
+          required: true
+          description: Amount to convert
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        "400":
+          description: Invalid currency code
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Invalid or expired token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InvalidTokenResponse"
+        "500":
+          description: Unexpected error occurred
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnExpectedErrorResponse"
+        "504":
+          description: Gateway timeout
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TimeoutResponse"
+
+
+  /api/auth/login:
+    post:
+      tags:
+        - authentication
+      summary: Login and generate JWT
+      description: Login with an email and password to generate a JWT token.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginResponse"
+        "401":
+          description: Unauthorized 
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginErrorResponse"
+
+components:
+  schemas:
+    CurrencyCode:
+      type: string
+      minLength: 3
+      maxLength: 3
+      example: "EUR"
+      description: A 3-letter currency code (e.g., EUR, USD).
+
+    Amount:
+      type: string
+      pattern: "^[0-9]+(\.[0-9]{1,2})?$"
+      example: "1000"
+      description: A positive number representing the amount to convert.
+
+    SuccessResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 200
+        data:
+          type: object
+          properties:
+            from:
+              $ref: "#/components/schemas/CurrencyCode"
+            to:
+              $ref: "#/components/schemas/CurrencyCode"
+            amount:
+              $ref: "#/components/schemas/Amount"
+            convertedAmount:
+              type: string
+              example: "1031.10"
+            exchangeRate:
+              type: number
+              example: 1.0311
+        info:
+          $ref: "#/components/schemas/Info"
+    InvalidTokenResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 400
+        data:
+          type: object
+          properties:
+            message:
+              type: string
+              example: "Invalid or expired token"
+        info:
+          $ref: "#/components/schemas/Info"
+    ErrorResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 400
+        data:
+          type: object
+          properties:
+            message:
+              type: string
+              example: "Invalid currency code"
+        info:
+          $ref: "#/components/schemas/Info"
+    LoginErrorResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 400
+        data:
+          type: object
+          properties:
+            message:
+              type: string
+              example: "Unauthorized - invalid credentials"
+        info:
+          $ref: "#/components/schemas/Info"
+     
+    UnExpectedErrorResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 500
+        data:
+          type: object
+          properties:
+            message:
+              type: string
+              example: "Unexpected error occurred"
+        info:
+          $ref: "#/components/schemas/Info"
+
+    TimeoutResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 504
+        data:
+          type: object
+          properties:
+            message:
+              type: string
+              example: "Request to the exchange rate API timed out"
+        info:
+          $ref: "#/components/schemas/Info"
+
+    Info:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          example: "2025-02-11T12:58:01.656Z"
+        version:
+          type: string
+          example: "1.0.0"
+
+    LoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          example: "user@example.com"
+          description: The user's email address.
+        password:
+          type: string
+          example: "password123"
+          description: The user's password.
+      required:
+        - email
+        - password
+
+    LoginResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 200
+        data:
+          type: object
+          properties:
+            token:
+              type: string
+              example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+              description: The JWT token for authenticated requests.
+        info:
+          $ref: "#/components/schemas/Info"
