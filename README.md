@@ -1,4 +1,4 @@
-# **NodeJS CUrrency Converter Backend API**
+# **NodeJS Currency Converter Backend API**
 
 ## **Technologies Used**
 
@@ -79,29 +79,23 @@ $ npm test
 
 ### Authentication
 
-- POST /api/auth/login
-
-        - Authenticate a user and generate a JWT token.
-          Authorization:
-              "username": "your_username",
-              "password": "your_password"
-          Response:
-          ```json
-          {
-      "status": 200,
-      "data": {
-          "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9....."
-      },
-      "info": {
-          "timestamp": "2025-02-13T11:41:09.432Z",
-          "version": "1.0.0"
-      }
-
+- POST /api/auth/login - Authenticate a user and generate a JWT token.
+  Authorization:
+  "username": "your_username",
+  "password": "your_password"
+  Response:
+  ```json
+  {
+  "status": 200,
+  "data": {
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9....."
+  },
+  "info": {
+  "timestamp": "2025-02-13T11:41:09.432Z",
+  "version": "1.0.0"
   }
 
-  ```
-
-  ```
+  }
 
 ### Currency Conversion
 
@@ -112,22 +106,21 @@ $ npm test
     from: The base currency code (e.g., USD).
     to: The target currency code (e.g., EUR).
     amount: The amount to convert.
-
-        Response:
-         ```json
-            {
-        "status": 200,
-        "data": {
-            "from": "EGP",
-            "to": "EUR",
-            "exchangeRate": 0.01904,
-            "amount": "32",
-            "convertedAmount": 0.60928
-        },
-        "info": {
-            "timestamp": "2025-02-13T21:00:50.241Z",
-            "version": "1.0.0"
-        }
+    Response:
+    ```json
+    {
+    "status": 200,
+    "data": {
+    "from": "EGP",
+    "to": "EUR",
+    "exchangeRate": 0.01904,
+    "amount": "32",
+    "convertedAmount": 0.60928
+    },
+    "info": {
+    "timestamp": "2025-02-13T21:00:50.241Z",
+    "version": "1.0.0"
+    }
 
     }
 
